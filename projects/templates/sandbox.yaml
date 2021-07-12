@@ -1,0 +1,13 @@
+project: template-sandbox
+billing_account_id: 012345-6789AB-CDEF01
+owners:
+  - user:template@yourdomain.com
+  - group:template-team@yourdomain.com
+  - serviceAccount:template-project-12456546342@template-project.iam.gserviceaccount.com
+budget:
+  currency: USD
+  limit: '25'
+labels:
+  owner: template-name
+  code: personal-sandbox
+  expiry: '2022-11-12'

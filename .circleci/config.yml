@@ -1,0 +1,138 @@
+version: 2.1
+
+orbs:
+  gcp-cli: circleci/gcp-cli@2.1.0
+
+executors:
+  terraform:
+    docker:
+      - image: hashicorp/terraform:0.14.7
+  python:
+    docker:
+      - image: circleci/python:3.6.4
+
+commands:
+  tf_init:
+    steps:
+      - run:
+          name: "Initializing terraform"
+          working_directory: terraform
+          command: |
+            terraform init -backend-config=environments/prod/backend-config.properties
+
+jobs:
+  init_repo:
+    executor: python
+    steps:
+      - run:
+          name: "Install pyyaml library"
+          command: |
+            pip install --user pyyaml
+      - checkout
+      - gcp-cli/install
+      - gcp-cli/initialize:
+          gcloud-service-key: GOOGLE_CREDENTIALS
+      - run:
+          name: "Add projects into main input"
+          working_directory: scripts/generate_terraform_variables
+          command: |
+            python generate_terraform_variables.py
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - terraform
+
+  tf_plan:
+    executor: terraform
+    steps:
+      - attach_workspace:
+          at: .
+      - tf_init
+      - run:
+          name: "Creating terraform plan"
+          working_directory: terraform
+          command: |
+            terraform fmt -check -recursive .
+            terraform plan -parallelism=4 -var-file=environments/prod/generated_vars.json
+
+  tf_apply:
+    executor: terraform
+    steps:
+      - attach_workspace:
+          at: .
+      - tf_init
+      - run:
+          name: "Applying changes"
+          working_directory: terraform
+          command: |
+            terraform apply -parallelism=4 -auto-approve -var-file=environments/prod/generated_vars.json
+
+  generate_csv_reports:
+    executor: python
+    steps:
+      - run:
+          name: "Install pyyaml library"
+          command: |
+            pip install --user pyyaml
+      - checkout
+      - gcp-cli/install
+      - gcp-cli/initialize:
+          gcloud-service-key: GOOGLE_CREDENTIALS
+      - run:
+          name: "Load info from GCP"
+          working_directory: scripts/generate_reports
+          command: |
+            ./collect.sh
+            python generate_status_csv.py
+            python generate_budgets_csv.py
+      - run:
+          name: "Upload reports CSV to GCS"
+          working_directory: scripts/generate_reports/.target
+          command: |
+            gsutil cp ./*.csv "gs://$REPORTS_GCS_BUCKET/reports/"
+
+
+workflows:
+  create_plan:
+    jobs:
+      - init_repo:
+          filters:
+            branches:
+              ignore:
+                - master
+      - tf_plan:
+          requires:
+            - init_repo
+          filters:
+            branches:
+              ignore:
+                - master
+  
+  apply_changes:
+    jobs:
+      - init_repo:
+          filters:
+            branches:
+              only: master
+      - tf_apply:
+          requires:
+            - init_repo
+          filters:
+            branches:
+              only: master
+      - generate_csv_reports:
+          requires:
+            - tf_apply
+          filters:
+            branches:
+              only: master
+
+  generate_daily_report:
+    triggers:
+      - schedule:
+          cron: "0 4 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - generate_csv_reports

@@ -1,0 +1,14 @@
+{
+  "project": "template-sandbox",
+  "billing_account_id": "0001C5-18BAE3-77BB54",
+  "owners": ["user:template@aliz.ai", "group:template-team@aliz.ai", "serviceAccount:template-project-12456546342@template-project.iam.gserviceaccount.com"], 
+  "budget": {
+    "currency": "USD",
+    "limit": "25"
+  },
+  "labels": {
+      "owner": "template-name",
+      "code": "personal-sandbox",
+      "expiry": "2022-11-12"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "project": "your-gcp-project-for-provisioning",
+  "organization_id": "12345612345",
+  "default_region": "europe-west3",
+  "default_zone": "europe-west3-b"
+}

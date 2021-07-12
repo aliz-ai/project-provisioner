@@ -1,0 +1,45 @@
+{
+  "project_number":"",
+  "project_id":"",
+  "project_name":"",
+  "folder_id":"",
+  "labels":{
+
+  },
+  "billing_account_id":"",
+  "budget":{
+    "limit":"0",
+    "currency":"USD",
+    "threshold_rules":[
+      {
+        "spend_basis":"CURRENT_SPEND",
+        "threshold_percent":0.9
+      },
+      {
+        "spend_basis":"CURRENT_SPEND",
+        "threshold_percent":1
+      },
+      {
+        "spend_basis":"CURRENT_SPEND",
+        "threshold_percent":1.5
+      },
+      {
+        "spend_basis":"CURRENT_SPEND",
+        "threshold_percent":2
+      },
+      {
+        "spend_basis":"FORECASTED_SPEND",
+        "threshold_percent":1
+      }
+    ],
+    "display_name":"",
+    "credit_types_treatment":"EXCLUDE_ALL_CREDITS",
+    "all_updates_rule":{
+      "disable_default_iam_recipients":false,
+      "schema_version":"",
+      "pubsub_topic":"",
+      "monitoring_notification_channels":[
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+.terraform*
+.idea
+.DS_Store
+.vscode
+.target
+.localenv
+generated*
+terraform/patch/plugins
