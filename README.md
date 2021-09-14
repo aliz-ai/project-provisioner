@@ -66,3 +66,7 @@ As a requestor, follow the following steps:
 | `scripts` | [docs](scripts/README.md) | Contains shell and python scripts used for automation |
 | `terraform` | [docs](terraform/README.md) | Contains the terraform project |
 
+## You need more?
+
+If you are looking for a more advanced solution please have a look at our Platform: https://aliz.ai/product-landing-page/
+If you are looking for ready-made blueprints what you can checkout and adjust the code to your needs: https://aliz.ai/blueprints/
